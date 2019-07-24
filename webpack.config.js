@@ -4,7 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const { spawn } = require('child_process')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -18,6 +19,12 @@ module.exports = {
   },
   module: {
     rules: [
+      { 
+        test: /\.vue$/,
+        use: {
+          loader: 'vue-loader'
+        }
+      },
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
@@ -66,6 +73,7 @@ module.exports = {
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.ProgressPlugin(),
+    new VueLoaderPlugin(),
   ],
   resolve: {
     extensions: ['.js'],

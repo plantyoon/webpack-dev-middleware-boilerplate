@@ -1,4 +1,4 @@
-import './test.scss'
+import './main.scss'
 
-console.log('test')
+console.log('App start!')
 // test

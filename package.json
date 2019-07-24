@@ -40,6 +40,6 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/npm/cli.git"
+    "url": "https://github.com/plantyoon/webpack-dev-middleware-boilerplate.git"
   }
 }

@@ -35,6 +35,18 @@ function runDevServer(app, port) {
     webpackHotMiddleware(compiler)
   )
 
+  app.use('*', (req, res, next) => { // https://github.com/jantimon/html-webpack-plugin/issues/145#issuecomment-170554832 
+    const filename = path.join(compiler.outputPath,'index.html'); 
+    compiler.outputFileSystem.readFile(filename, (err, result) => { 
+      if (err) { 
+        return next(err); 
+      } 
+      res.set('content-type','text/html'); 
+      res.send(result); 
+      res.end(); 
+    }); 
+  });  
+
   app.listen(port);
 }
 

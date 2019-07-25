@@ -1,3 +1,5 @@
+import 'core-js/stable'
+
 require('../src/main')
 
 if(module.hot) {

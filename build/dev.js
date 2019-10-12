@@ -6,10 +6,6 @@ const webpackHotMiddleware = require('webpack-hot-middleware')
 
 const webpackConfig = require('../webpack.config')
 const compiler = webpack(webpackConfig)
-compiler.hooks.done.tap('ProgressPlugin', (context, entry) => {
-  console.clear()
-  console.log(`\nServer running at : ${color('green,underline')(`http://localhost:${PORT}`)}\n`)
-});
 
 const express = require('express')
 const app = express()
@@ -18,11 +14,12 @@ const color = require('./escape-color')
 
 const {getPort, checkPort} = require('./get-port')
 
+const DEFAULT_PORT = 8080
+
 function getPropPort() {
   if (process.argv.indexOf('-p') === -1) return 0
   else return Number(process.argv[process.argv.indexOf('-p') + 1])
 }
-let PORT = getPropPort() ? getPropPort() : 8080
 
 function runDevServer(app, port) {
   app.use(
@@ -39,13 +36,19 @@ function runDevServer(app, port) {
 }
 
 const main = async () => {
+  let port = getPropPort() ? getPropPort() : DEFAULT_PORT
+
   try {
-    await checkPort(PORT)
-    runDevServer(app, PORT)
+    await checkPort(port)
   } catch (e) {
-    console.log(color('yellow')(`Warning: listen EADDRINUSE: address already in use :::${PORT}\n`))
-    PORT = await getPort()
-    runDevServer(app, PORT)
+    console.log(color('yellow')(`Warning: listen EADDRINUSE: address already in use :::${port}\n`))
+    port = await getPort()
   }
+  runDevServer(app, port)
+
+  compiler.hooks.done.tap('ProgressPlugin', (context, entry) => {
+    console.clear()
+    console.log(`\nServer running at : ${color('green,underline')(`http://localhost:${port}`)}\n`)
+  });
 }
 main()

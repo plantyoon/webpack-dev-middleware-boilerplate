@@ -7,6 +7,8 @@ const webpackHotMiddleware = require('webpack-hot-middleware')
 const webpackConfig = require('../webpack.config')
 const compiler = webpack(webpackConfig)
 
+const path = require('path')
+
 const express = require('express')
 const app = express()
 
@@ -16,11 +18,11 @@ const {getPort, checkPort} = require('./get-port')
 
 const DEFAULT_PORT = 8080
 
-function getPropPort() {
-  if (process.argv.indexOf('-p') === -1) return 0
-  else return Number(process.argv[process.argv.indexOf('-p') + 1])
-}
-
+/**
+ * Run HMR Dev Server
+ * @param {import('express')} app 
+ * @param {number} port 
+ */
 function runDevServer(app, port) {
   app.use(
     webpackDevMiddleware(compiler, {
@@ -32,11 +34,23 @@ function runDevServer(app, port) {
     webpackHotMiddleware(compiler)
   )
 
+  app.use('*', (req, res, next) => {
+    const filename = path.join(compiler.outputPath,'index.html');
+    compiler.outputFileSystem.readFile(filename, (err, result) => {
+      if (err) {
+        return next(err);
+      }
+      res.set('content-type','text/html');
+      res.send(result);
+      res.end();
+    });
+  });
+
   app.listen(port);
 }
 
 const main = async () => {
-  let port = getPropPort() ? getPropPort() : DEFAULT_PORT
+  let port = DEFAULT_PORT
 
   try {
     await checkPort(port)
